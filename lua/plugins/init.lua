@@ -88,6 +88,15 @@ local default_plugins = {
       return require "plugins.configs.treesitter"
     end,
     config = function(_, opts)
+      local nvim_treesitter_install = require('nvim-treesitter.install')
+      nvim_treesitter_install.prefer_git = true
+      local parsers = require('nvim-treesitter.parsers').get_parser_configs()
+      for _, p in pairs(parsers) do
+        p.install_info.url = p.install_info.url:gsub(
+          'https://github.com/',
+          'git@git.zhlh6.cn:'
+        )
+      end
       dofile(vim.g.base46_cache .. "syntax")
       require("nvim-treesitter.configs").setup(opts)
     end,
@@ -130,6 +139,7 @@ local default_plugins = {
     end,
     config = function(_, opts)
       dofile(vim.g.base46_cache .. "mason")
+      opts = vim.tbl_extend('force', { github = { download_url_template = 'https://ghproxy.com/https://github.com/%s/releases/download/%s/%s', } }, opts)
       require("mason").setup(opts)
 
       -- custom nvchad cmd to install all mason binaries listed
