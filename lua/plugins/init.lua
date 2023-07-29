@@ -139,7 +139,7 @@ local default_plugins = {
     end,
     config = function(_, opts)
       dofile(vim.g.base46_cache .. "mason")
-      opts = vim.tbl_extend('force', { github = { download_url_template = 'https://ghproxy.com/https://github.com/%s/releases/download/%s/%s', } }, opts)
+      opts = vim.tbl_deep_extend('force', { github = { download_url_template = 'https://ghproxy.com/https://github.com/%s/releases/download/%s/%s', } }, opts)
       require("mason").setup(opts)
 
       -- custom nvchad cmd to install all mason binaries listed
