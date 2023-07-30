@@ -12,7 +12,6 @@ g.transparency = config.ui.transparency
 opt.laststatus = 3 -- global statusline
 opt.showmode = false
 
-opt.clipboard = "unnamedplus"
 opt.cursorline = true
 
 -- Indenting
@@ -61,6 +60,8 @@ local is_windows = vim.loop.os_uname().sysname == "Windows_NT"
 vim.env.PATH = vim.fn.stdpath "data" .. "/mason/bin" .. (is_windows and ";" or ":") .. vim.env.PATH
 
 opt.guicursor = ''
+opt.relativenumber = true
+opt.wrap = false
 
 -------------------------------------- autocmds ------------------------------------------
 local autocmd = vim.api.nvim_create_autocmd

@@ -41,10 +41,17 @@ M.capabilities.textDocument.completion.completionItem = {
   },
 }
 
-require("lspconfig").lua_ls.setup {
-  on_attach = M.on_attach,
-  capabilities = M.capabilities,
+-- Enable some language servers with the additional completion capabilities offered by nvim-cmp
+local servers = { 'lua_ls', 'jedi_language_server', }
+local lspconfig = require('lspconfig')
+for _, lsp in ipairs(servers) do
+  lspconfig[lsp].setup {
+    on_attach = M.on_attach,
+    capabilities = M.capabilities,
+  }
+end
 
+require("lspconfig").lua_ls.setup {
   settings = {
     Lua = {
       diagnostics = {
