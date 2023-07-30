@@ -277,6 +277,87 @@ local default_plugins = {
       require("which-key").setup(opts)
     end,
   },
+  {
+    'ahmedkhalf/project.nvim',
+    lazy = false,
+    config = function()
+      require('project_nvim').setup({
+        patterns = { '.git', '.root' },
+      })
+    end,
+  },
+  {
+    'ysl2/neovim-session-manager',
+    lazy = false,
+    cmd = 'SessionManager',
+    keys = {
+      { '<LEADER>o', '<CMD>SessionManager load_session<CR>',   mode = 'n', silent = true },
+      { '<LEADER>O', '<CMD>SessionManager delete_session<CR>', mode = 'n', silent = true }
+    },
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+      { 'stevearc/dressing.nvim', config = function() require('dressing').setup {} end },
+    },
+    config = function()
+      require('session_manager').setup({
+        autoload_mode = require('session_manager.config').AutoloadMode.CurrentDir
+      })
+
+      vim.api.nvim_create_autocmd('VimEnter', {
+        callback = function()
+          if vim.fn.has('win32') == 1 then
+            vim.cmd('silent! cd %:p:h')
+            -- An empty file will be opened if you use right mouse click. So `bw!` to delete it.
+            -- Once you delete the empty buffer, netrw won't popup. So you needn't do `vim.cmd('silent! au! FileExplorer *')` to silent netrw.
+            vim.cmd('silent! bw!')
+          end
+          -- vim.fn.argc() is 1 (not 0) if you open from right mouse click on windows platform.
+          -- So it can't be an instance that can be treated as in a workspace.
+          if vim.fn.has('win32') == 1 or vim.fn.argc() == 0 then
+            vim.cmd('silent! SessionManager load_current_dir_session')
+          end
+        end
+      })
+    end
+  },
+  {
+    'ethanholz/nvim-lastplace',
+    event = 'BufReadPost',
+    config = function()
+      require 'nvim-lastplace'.setup {
+        lastplace_ignore_buftype = { 'quickfix', 'nofile', 'help' },
+        lastplace_ignore_filetype = { 'gitcommit', 'gitrebase', 'svn', 'hgcommit' },
+        lastplace_open_folds = true
+      }
+    end
+  },
+  { 'Asheq/close-buffers.vim',             cmd = 'Bdelete' },
+  { 'ysl2/bufdelete.nvim',        cmd = 'Bd' },
+  {
+    'mbbill/undotree',
+    lazy = false,
+    keys = { { '<LEADER>u', '<CMD>UndotreeToggle<CR>', mode = 'n', silent = true } },
+    config = function()
+      vim.g.undotree_WindowLayout = 3
+      if vim.fn.has('persistent_undo') == 1 then
+        local target_path = vim.fn.expand(vim.fn.stdpath('data') .. '/.undodir')
+        if vim.fn.isdirectory(target_path) == 0 then
+          vim.fn.mkdir(target_path, 'p')
+        end
+        vim.cmd("let &undodir='" .. target_path .. "'")
+        vim.cmd('set undofile')
+      end
+    end
+  },
+  {
+    'csexton/trailertrash.vim',
+    event = 'BufWritePre',
+    config = function()
+      vim.api.nvim_create_autocmd('BufWritePre', {
+        command = 'TrailerTrim'
+      })
+    end
+  },
 }
 
 local config = require("core.utils").load_config()
